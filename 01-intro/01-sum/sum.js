@@ -1,6 +1,7 @@
 export default function sum(a, b) {
-  if (typeof a !== "number" || typeof b !== "number")
-    throw TypeError("not validate args");
-  /* ваш код */
+  if ([a, b].some((value) => typeof value !== "number")) {
+    throw new TypeError();
+  }
+
   return a + b;
 }
