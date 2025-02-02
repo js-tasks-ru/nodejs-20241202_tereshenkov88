@@ -16,6 +16,7 @@ export class TasksService {
       description: "Second task",
       status: TaskStatus.IN_PROGRESS,
     },
+
     {
       id: "3",
       title: "Task 3",
@@ -40,5 +41,44 @@ export class TasksService {
     status?: TaskStatus,
     page?: number,
     limit?: number,
-  ): Task[] {}
+    sortBy?: boolean,
+  ): Task[] {
+    const currentPage = page || 1;
+    const currentlimit = limit || 2;
+    let filteredTask: Task[];
+    if (!limit || !page) {
+      let resultedArray: Task[] = [];
+      if (sortBy) {
+        resultedArray = [...this.tasks].sort((a, b) =>
+          a.title.localeCompare(b.title, "ru", {
+            sensitivity: "base",
+            ignorePunctuation: true,
+          }),
+        );
+      }
+      if (status) {
+        resultedArray = this.tasks.filter((task) => task.status === status);
+      }
+      return resultedArray.length > 0 ? resultedArray : this.tasks;
+    }
+
+    if (!status) {
+      filteredTask = this.tasks;
+    } else {
+      filteredTask = this.tasks.filter((task) => task.status === status);
+    }
+
+    const startIndex = (currentPage - 1) * currentlimit;
+    const endIndex = currentPage * currentlimit;
+    const resFiltersTasks = filteredTask.slice(startIndex, endIndex);
+    if (sortBy) {
+      return [...resFiltersTasks].sort((a, b) =>
+        a.title.localeCompare(b.title, "ru", {
+          sensitivity: "base",
+          ignorePunctuation: true,
+        }),
+      );
+    }
+    return resFiltersTasks;
+  }
 }
